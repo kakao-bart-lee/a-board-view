@@ -20,6 +20,10 @@ export default function Post() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: comment }),
     });
+    const res = await api(`/posts/${id}`);
+    if (res.ok) {
+      setPost(await res.json());
+    }
     setComment('');
   };
 
