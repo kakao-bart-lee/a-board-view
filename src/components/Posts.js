@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useApi } from '../api';
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
+  const api = useApi();
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/posts`)
+    api('/posts')
       .then(res => res.json())
       .then(setPosts);
   }, []);

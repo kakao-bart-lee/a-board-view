@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useApi } from '../api';
 
 export default function CreatePost() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const navigate = useNavigate();
+  const api = useApi();
   const submit = async (e) => {
     e.preventDefault();
-    await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/posts`, {
+    await api('/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, content }),
