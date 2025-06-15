@@ -1,8 +1,10 @@
 # a-board-view
 
 A React front-end for the [a-board](https://github.com/kakao-bart-lee/a-board) back-end.
-It allows users to sign up, log in, view posts, write new posts and add comments
-through social login links provided by the back-end service.
+It implements the authentication flow described in that project's README: users
+are created via `POST /users` and receive a JWT from `POST /auth/token`. The
+token is stored and sent with subsequent requests so posts and comments can be
+created.
 
 # Getting Started with Create React App
 
