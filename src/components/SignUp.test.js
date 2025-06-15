@@ -26,7 +26,7 @@ test('creates user and requests token', async () => {
     .mockResolvedValueOnce({ ok: true, json: async () => ({ token: 'jwt' }) });
 
   userEvent.type(screen.getByPlaceholderText(/Name/i), 'Jane');
-  userEvent.type(screen.getByPlaceholderText(/Gender/i), 'F');
+  userEvent.selectOptions(screen.getByLabelText(/Gender/i), 'female');
   userEvent.type(screen.getByPlaceholderText(/Birth Year/i), '2000');
   userEvent.click(screen.getByRole('button', { name: /Sign Up/i }));
 
