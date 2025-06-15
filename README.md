@@ -6,6 +6,14 @@ are created via `POST /users` and receive a JWT from `POST /auth/token`. The
 token is stored and sent with subsequent requests so posts and comments can be
 created.
 
+## Setup
+
+Run `npm install` once after cloning the repository. The development server and test suite rely on these packages, so install them before using `npm start` or `npm test`.
+
+The app reads `REACT_APP_API_URL` to know where the backend is running. Set it in your shell or a `.env` file to override the default of `http://localhost:8080`.
+
+If you need to proxy API calls in development, create `src/setupProxy.js` following the Create React App documentation.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
