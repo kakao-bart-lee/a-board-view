@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../AuthContext';
-
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+import { API } from '../api';
 
 export default function SignUp() {
   const [name, setName] = useState('');

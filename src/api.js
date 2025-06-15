@@ -1,6 +1,6 @@
 import { useAuth } from './AuthContext';
 
-const BASE = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+export const API = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 export function useApi() {
   const { token } = useAuth();
@@ -9,6 +9,6 @@ export function useApi() {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    return fetch(`${BASE}${path}`, { ...options, headers });
+    return fetch(`${API}${path}`, { ...options, headers });
   };
 }
