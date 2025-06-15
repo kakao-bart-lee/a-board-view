@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useApi } from '../api';
+import {
+  Typography,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -13,15 +20,26 @@ export default function Posts() {
 
   return (
     <div>
-      <h2>Posts</h2>
-      <Link to="/create">Write Post</Link>
-      <ul>
+      <Typography variant="h4" gutterBottom>
+        Posts
+      </Typography>
+      <Button
+        variant="contained"
+        component={RouterLink}
+        to="/create"
+        sx={{ mb: 2 }}
+      >
+        Write Post
+      </Button>
+      <List>
         {posts.map(p => (
-          <li key={p.id}>
-            <Link to={`/posts/${p.id}`}>{p.text}</Link>
-          </li>
+          <ListItem key={p.id} disablePadding>
+            <ListItemText>
+              <Button component={RouterLink} to={`/posts/${p.id}`}>{p.text}</Button>
+            </ListItemText>
+          </ListItem>
         ))}
-      </ul>
+      </List>
     </div>
   );
 }

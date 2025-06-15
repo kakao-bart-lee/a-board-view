@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { API } from '../api';
+import { Typography, TextField, Button, Alert } from '@mui/material';
 
 export default function Login() {
   const [userId, setUserId] = useState('');
@@ -24,10 +25,24 @@ export default function Login() {
   };
   return (
     <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      <input value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="User ID" />
-      <button type="submit">Login</button>
-      {error && <p role="alert">{error}</p>}
+      <Typography variant="h4" gutterBottom>
+        Login
+      </Typography>
+      <TextField
+        value={userId}
+        onChange={(e) => setUserId(e.target.value)}
+        placeholder="User ID"
+        fullWidth
+        sx={{ mb: 2 }}
+      />
+      <Button type="submit" variant="contained">
+        Login
+      </Button>
+      {error && (
+        <Alert severity="error" role="alert" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
+      )}
     </form>
   );
 }
