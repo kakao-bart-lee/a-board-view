@@ -32,7 +32,18 @@ export default function SignUp() {
     <form onSubmit={handleSubmit}>
       <h2>Sign Up</h2>
       <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-      <input value={gender} onChange={(e) => setGender(e.target.value)} placeholder="Gender" />
+      <label>
+        Gender
+        <select
+          aria-label="Gender"
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+        >
+          <option value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </label>
       <input value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="Birth Year" />
       <button type="submit">Sign Up</button>
     </form>
