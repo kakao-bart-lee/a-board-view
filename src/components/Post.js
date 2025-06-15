@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useApi } from '../api';
+import {
+  Typography,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 
 export default function Post() {
   const { id } = useParams();
@@ -31,16 +39,28 @@ export default function Post() {
 
   return (
     <div>
-      <p>{post.text}</p>
-      <form onSubmit={submitComment}>
-        <input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
-        <button type="submit">Add Comment</button>
+      <Typography variant="body1" gutterBottom>
+        {post.text}
+      </Typography>
+      <form onSubmit={submitComment} style={{ marginBottom: 16 }}>
+        <TextField
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Comment"
+          size="small"
+          sx={{ mr: 1 }}
+        />
+        <Button type="submit" variant="contained">
+          Add Comment
+        </Button>
       </form>
-      <ul>
+      <List>
         {(post.comments || []).map(c => (
-          <li key={c.id}>{c.text}</li>
+          <ListItem key={c.id} disablePadding>
+            <ListItemText primary={c.text} />
+          </ListItem>
         ))}
-      </ul>
+      </List>
     </div>
   );
 }

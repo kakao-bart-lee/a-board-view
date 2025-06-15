@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { API } from '../api';
+import {
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  FormControl,
+} from '@mui/material';
 
 export default function SignUp() {
   const [name, setName] = useState('');
@@ -39,23 +46,45 @@ export default function SignUp() {
   };
   return (
     <form onSubmit={handleSubmit}>
-      <h2>Sign Up</h2>
-      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-      <label>
-        Gender
+      <Typography variant="h4" gutterBottom>
+        Sign Up
+      </Typography>
+      <TextField
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+        fullWidth
+        sx={{ mb: 2 }}
+      />
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <label htmlFor="gender-select">Gender</label>
         <select
+          id="gender-select"
           aria-label="Gender"
           value={gender}
           onChange={(e) => setGender(e.target.value)}
+          style={{ padding: '8px', marginTop: 4 }}
         >
           <option value="">Select Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
-      </label>
-      <input value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="Birth Year" />
-      <button type="submit">Sign Up</button>
-      {error && <p role="alert">{error}</p>}
+      </FormControl>
+      <TextField
+        value={birthYear}
+        onChange={(e) => setBirthYear(e.target.value)}
+        placeholder="Birth Year"
+        fullWidth
+        sx={{ mb: 2 }}
+      />
+      <Button type="submit" variant="contained">
+        Sign Up
+      </Button>
+      {error && (
+        <Alert severity="error" role="alert" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
+      )}
     </form>
   );
 }
