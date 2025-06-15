@@ -25,7 +25,11 @@ test('loads post and submits comment', async () => {
       ok: true,
       json: async () => ({ id: 1, text: 'Hello', comments: [] }),
     })
-    .mockResolvedValueOnce({ ok: true });
+    .mockResolvedValueOnce({ ok: true })
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 1, text: 'Hello', comments: [{ id: 2, text: 'Nice' }] }),
+    });
 
   renderWithContext(<Post />);
 
@@ -33,6 +37,7 @@ test('loads post and submits comment', async () => {
   userEvent.type(screen.getByPlaceholderText(/Comment/i), 'Nice');
   userEvent.click(screen.getByRole('button', { name: /Add Comment/i }));
 
-  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+  expect(await screen.findByText('Nice')).toBeInTheDocument();
   await waitFor(() => expect(screen.getByPlaceholderText(/Comment/i)).toHaveValue(''));
 });
