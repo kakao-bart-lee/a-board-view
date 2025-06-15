@@ -27,8 +27,7 @@ export default function Post() {
 
   return (
     <div>
-      <h3>{post.title}</h3>
-      <p>{post.content}</p>
+      <p>{post.text}</p>
       <form onSubmit={submitComment}>
         <input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
         <button type="submit">Add Comment</button>

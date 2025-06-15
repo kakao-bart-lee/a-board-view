@@ -25,8 +25,7 @@ test('submits new post and navigates home', async () => {
   global.fetch = jest.fn().mockResolvedValue({ ok: true });
 
   renderWithRouter(<CreatePost />);
-  userEvent.type(screen.getByPlaceholderText(/Title/i), 'Hello');
-  userEvent.type(screen.getByPlaceholderText(/Content/i), 'World');
+  userEvent.type(screen.getByPlaceholderText(/Write something/i), 'Hello world');
   userEvent.click(screen.getByRole('button', { name: /Submit/i }));
 
   await waitFor(() => expect(fetch).toHaveBeenCalled());

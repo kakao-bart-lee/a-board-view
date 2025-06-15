@@ -18,7 +18,7 @@ export default function Posts() {
       <ul>
         {posts.map(p => (
           <li key={p.id}>
-            <Link to={`/posts/${p.id}`}>{p.title}</Link>
+            <Link to={`/posts/${p.id}`}>{p.text}</Link>
           </li>
         ))}
       </ul>

@@ -23,7 +23,7 @@ test('loads post and submits comment', async () => {
     .fn()
     .mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ id: 1, title: 'Hello', content: 'Content', comments: [] }),
+      json: async () => ({ id: 1, text: 'Hello', comments: [] }),
     })
     .mockResolvedValueOnce({ ok: true });
 
