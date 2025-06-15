@@ -5,17 +5,22 @@ const API = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 export default function Login() {
   const [userId, setUserId] = useState('');
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`${API}/auth/token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId }),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch(`${API}/auth/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+      if (!res.ok) throw new Error('Failed to fetch token');
       const data = await res.json();
       login(data.token);
+      setError('');
+    } catch (err) {
+      setError('Login failed');
     }
   };
   return (
@@ -23,6 +28,7 @@ export default function Login() {
       <h2>Login</h2>
       <input value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="User ID" />
       <button type="submit">Login</button>
+      {error && <p role="alert">{error}</p>}
     </form>
   );
 }

@@ -31,3 +31,13 @@ test('submits user id and stores token', async () => {
   await waitFor(() => expect(fetch).toHaveBeenCalled());
   await waitFor(() => expect(login).toHaveBeenCalledWith('abc123'));
 });
+
+test('shows error message on failure', async () => {
+  renderWithContext(<Login />);
+  global.fetch = jest.fn().mockRejectedValueOnce(new Error('network'));
+
+  userEvent.type(screen.getByPlaceholderText(/User ID/i), '42');
+  userEvent.click(screen.getByRole('button', { name: /Login/i }));
+
+  await screen.findByRole('alert');
+});
