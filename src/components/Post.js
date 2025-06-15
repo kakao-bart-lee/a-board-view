@@ -11,7 +11,7 @@ export default function Post() {
     api(`/posts/${id}`)
       .then(res => res.json())
       .then(setPost);
-  }, [id]);
+  }, [id, api]);
 
   const submitComment = async (e) => {
     e.preventDefault();

@@ -9,7 +9,7 @@ export default function Posts() {
     api('/posts')
       .then(res => res.json())
       .then(setPosts);
-  }, []);
+  }, [api]);
 
   return (
     <div>
