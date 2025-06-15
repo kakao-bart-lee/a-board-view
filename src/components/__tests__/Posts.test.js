@@ -18,7 +18,7 @@ afterEach(() => {
 test('renders posts from api', async () => {
   global.fetch = jest.fn().mockResolvedValue({
     ok: true,
-    json: async () => [{ id: 1, title: 'First Post' }],
+    json: async () => [{ id: 1, text: 'First Post' }],
   });
 
   renderWithProviders(<Posts />);
