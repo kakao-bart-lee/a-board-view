@@ -33,3 +33,15 @@ test('creates user and requests token', async () => {
   await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
   await waitFor(() => expect(login).toHaveBeenCalledWith('jwt'));
 });
+
+test('shows error message on failure', async () => {
+  renderWithContext(<SignUp />);
+  global.fetch = jest.fn().mockRejectedValueOnce(new Error('network'));
+
+  userEvent.type(screen.getByPlaceholderText(/Name/i), 'Jane');
+  userEvent.selectOptions(screen.getByLabelText(/Gender/i), 'female');
+  userEvent.type(screen.getByPlaceholderText(/Birth Year/i), '2000');
+  userEvent.click(screen.getByRole('button', { name: /Sign Up/i }));
+
+  await screen.findByRole('alert');
+});
