@@ -86,13 +86,15 @@ export default function Post() {
                     {time}
                   </Typography>
                 )}
-                <Button
-                  size="small"
-                  sx={{ minWidth: 'auto', mr: 1 }}
-                  onClick={() => startReply(c)}
-                >
-                  대댓글
-                </Button>
+                {depth === 0 && (
+                  <Button
+                    size="small"
+                    sx={{ minWidth: 'auto', mr: 1 }}
+                    onClick={() => startReply(c)}
+                  >
+                    대댓글
+                  </Button>
+                )}
                 <Button size="small" onClick={openCommentMenu} sx={{ minWidth: 'auto' }}>
                   {'\u22EE'}
                 </Button>
@@ -121,7 +123,7 @@ export default function Post() {
             </div>
           </form>
         )}
-        {(c.comments || c.replies || []).map((child) => renderComment(child, depth + 1))}
+        {depth < 1 && (c.comments || c.replies || []).map((child) => renderComment(child, depth + 1))}
       </div>
     );
   };
