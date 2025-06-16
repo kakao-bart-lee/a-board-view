@@ -62,7 +62,7 @@ export default function Posts() {
           const viewCount = p.viewCount || p.views || 0;
           const commentCount = p.comments ? p.comments.length : p.commentCount || 0;
           return (
-            <ListItem key={p.id} disablePadding>
+            <ListItem key={p.id} disablePadding sx={{ mb: 1 }}>
               <ListItemText>
                 <Button
                   component={RouterLink}
