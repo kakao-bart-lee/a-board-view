@@ -148,6 +148,7 @@ export default function Post() {
         const normalize = (comments = []) =>
           comments.map((c) => ({
             ...c,
+            createdAt: c.createdAt || c.created || c.created_at,
             comments: normalize(c.comments || c.replies || []),
             replies: c.replies || c.comments,
           }));
@@ -179,14 +180,19 @@ export default function Post() {
       }
     }
     if (newComment) {
+      const normalized = {
+        ...newComment,
+        createdAt:
+          newComment.createdAt || newComment.created || newComment.created_at,
+      };
       setPost((prev) => {
         if (!prev) return prev;
         const insert = (list) => {
-          if (!replyTo) return [...list, newComment];
+          if (!replyTo) return [...list, normalized];
           return list.map((c) => {
             const children = c.comments || c.replies || [];
             if (c.id === replyTo.id) {
-              const updated = [...children, newComment];
+              const updated = [...children, normalized];
               return { ...c, comments: updated, replies: updated };
             }
             const updatedChildren = insert(children);
