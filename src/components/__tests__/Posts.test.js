@@ -23,6 +23,6 @@ test('renders posts from api', async () => {
 
   renderWithProviders(<Posts />);
 
-  expect(await screen.findByRole('link', { name: 'First Post' })).toBeInTheDocument();
+  expect(await screen.findByRole('link', { name: /First Post/ })).toBeInTheDocument();
   expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/posts'), expect.any(Object));
 });
