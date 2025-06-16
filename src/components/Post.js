@@ -9,6 +9,8 @@ import {
   ListItem,
   ListItemText,
   Alert,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 
 export default function Post() {
@@ -16,7 +18,37 @@ export default function Post() {
   const [post, setPost] = useState(null);
   const [error, setError] = useState('');
   const [comment, setComment] = useState('');
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [commentMenuAnchor, setCommentMenuAnchor] = useState(null);
   const api = useApi();
+
+  const openMenu = (e) => {
+    setMenuAnchor(e.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setMenuAnchor(null);
+  };
+
+  const openCommentMenu = (e) => {
+    setCommentMenuAnchor(e.currentTarget);
+  };
+
+  const closeCommentMenu = () => {
+    setCommentMenuAnchor(null);
+  };
+
+  const timeAgo = (dateStr) => {
+    if (!dateStr) return '';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return '방금 전';
+    if (minutes < 60) return `${minutes}분 전`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}시간 전`;
+    const days = Math.floor(hours / 24);
+    return `${days}일 전`;
+  };
   useEffect(() => {
     api(`/posts/${id}`)
       .then(async (res) => {
@@ -58,10 +90,37 @@ export default function Post() {
 
   if (!post) return <div>Loading...</div>;
 
+  const lines = (post.text || '').split(/\r?\n/);
+  const first = lines[0] || '';
+  const rest = lines.slice(1).join('\n');
+  const color = (post.gender || '').toLowerCase() === 'male' ? 'blue' : 'hotpink';
+  const viewCount = post.viewCount || post.views || 0;
+  const commentCount = post.comments ? post.comments.length : post.commentCount || 0;
+
   return (
     <div>
-      <Typography variant="body1" gutterBottom>
-        {post.text}
+      <Typography component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
+        <span style={{ color }}>{'\u25CF'}</span> {first}
+      </Typography>
+      {rest && (
+        <Typography variant="body1" gutterBottom>
+          {rest}
+        </Typography>
+      )}
+      <Typography component="div" sx={{ mb: 1 }}>
+        <span role="img" aria-label="views">👁</span> {viewCount}{' '}
+        <span role="img" aria-label="comments">💬</span> {commentCount}
+        <Button
+          size="small"
+          onClick={openMenu}
+          sx={{ ml: 1, minWidth: 'auto' }}
+        >
+          {'\u22EE'}
+        </Button>
+        <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={closeMenu}>
+          <MenuItem onClick={closeMenu}>신고하기</MenuItem>
+          <MenuItem onClick={closeMenu}>이 사용자의 글 보지않기</MenuItem>
+        </Menu>
       </Typography>
       <form onSubmit={submitComment} style={{ marginBottom: 16 }}>
         <TextField
@@ -76,12 +135,45 @@ export default function Post() {
         </Button>
       </form>
       <List>
-        {(post.comments || []).map(c => (
-          <ListItem key={c.id} disablePadding>
-            <ListItemText primary={c.text} />
-          </ListItem>
-        ))}
+        {(post.comments || []).map(c => {
+          const cColor = (c.gender || '').toLowerCase() === 'male' ? 'blue' : 'hotpink';
+          const time = timeAgo(c.createdAt || c.created || c.created_at);
+          return (
+            <ListItem key={c.id} disablePadding alignItems="flex-start">
+              <ListItemText
+                primary={
+                  <Typography component="span">
+                    <span style={{ color: cColor }}>{'\u25CF'}</span> {c.text}
+                  </Typography>
+                }
+                secondary={
+                  <span>
+                    {time && (
+                      <Typography component="span" variant="caption" sx={{ mr: 1 }}>
+                        {time}
+                      </Typography>
+                    )}
+                    <Button size="small" sx={{ minWidth: 'auto', mr: 1 }}>
+                      대댓글
+                    </Button>
+                    <Button size="small" onClick={openCommentMenu} sx={{ minWidth: 'auto' }}>
+                      {'\u22EE'}
+                    </Button>
+                  </span>
+                }
+              />
+            </ListItem>
+          );
+        })}
       </List>
+      <Menu
+        anchorEl={commentMenuAnchor}
+        open={Boolean(commentMenuAnchor)}
+        onClose={closeCommentMenu}
+      >
+        <MenuItem onClick={closeCommentMenu}>신고하기</MenuItem>
+        <MenuItem onClick={closeCommentMenu}>이 사용자의 글 보지않기</MenuItem>
+      </Menu>
       {error && (
         <Alert severity="error" role="alert" sx={{ mt: 2 }}>
           {error}

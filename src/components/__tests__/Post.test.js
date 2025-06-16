@@ -33,11 +33,11 @@ test('loads post and submits comment', async () => {
 
   renderWithContext(<Post />);
 
-  expect(await screen.findByText('Hello')).toBeInTheDocument();
+  expect(await screen.findByText(/Hello/)).toBeInTheDocument();
   userEvent.type(screen.getByPlaceholderText(/Comment/i), 'Nice');
   userEvent.click(screen.getByRole('button', { name: /Add Comment/i }));
 
   await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
-  expect(await screen.findByText('Nice')).toBeInTheDocument();
+  expect(await screen.findByText(/Nice/)).toBeInTheDocument();
   await waitFor(() => expect(screen.getByPlaceholderText(/Comment/i)).toHaveValue(''));
 });
