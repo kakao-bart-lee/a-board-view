@@ -121,7 +121,7 @@ export default function Post() {
             </div>
           </form>
         )}
-        {(c.comments || []).map((child) => renderComment(child, depth + 1))}
+        {(c.comments || c.replies || []).map((child) => renderComment(child, depth + 1))}
       </div>
     );
   };
@@ -143,6 +143,15 @@ export default function Post() {
         }
       })
       .then((data) => {
+        const normalize = (comments = []) =>
+          comments.map((c) => ({
+            ...c,
+            comments: normalize(c.comments || c.replies || []),
+            replies: c.replies || c.comments,
+          }));
+        if (data) {
+          data.comments = normalize(data.comments);
+        }
         setPost(data);
         setError('');
       })
@@ -170,13 +179,16 @@ export default function Post() {
     if (newComment) {
       setPost((prev) => {
         if (!prev) return prev;
-        const insert = (comments) => {
-          if (!replyTo) return [...comments, newComment];
-          return comments.map((c) => {
+        const insert = (list) => {
+          if (!replyTo) return [...list, newComment];
+          return list.map((c) => {
+            const children = c.comments || c.replies || [];
             if (c.id === replyTo.id) {
-              return { ...c, comments: [...(c.comments || []), newComment] };
+              const updated = [...children, newComment];
+              return { ...c, comments: updated, replies: updated };
             }
-            return { ...c, comments: insert(c.comments || []) };
+            const updatedChildren = insert(children);
+            return { ...c, comments: updatedChildren, replies: updatedChildren };
           });
         };
         return { ...prev, comments: insert(prev.comments || []) };
