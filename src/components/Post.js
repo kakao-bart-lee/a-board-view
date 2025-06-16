@@ -72,7 +72,14 @@ export default function Post() {
     const time = timeAgo(c.createdAt || c.created || c.created_at);
     return (
       <div key={c.id}>
-        <ListItem disablePadding alignItems="flex-start" sx={{ pl: depth * 2 }}>
+        <ListItem
+          disablePadding
+          alignItems="flex-start"
+          sx={{
+            pl: depth * 2,
+            backgroundColor: depth > 0 ? 'rgba(0,0,0,0.04)' : 'transparent',
+          }}
+        >
           <ListItemText
             primary={
               <Typography component="span">
