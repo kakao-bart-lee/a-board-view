@@ -100,6 +100,27 @@ export default function Post() {
             }
           />
         </ListItem>
+        {replyTo && replyTo.id === c.id && (
+          <form onSubmit={submitComment} style={{ marginBottom: 16 }}>
+            <div style={{ paddingLeft: (depth + 1) * 16 }}>
+            <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+              Replying to: {c.text}
+              <Button size="small" onClick={cancelReply} sx={{ ml: 1 }}>
+                Cancel
+              </Button>
+            </Typography>
+            <TextField
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Comment"
+              size="small"
+              inputRef={commentRef}
+              sx={{ mr: 1 }}
+            />
+            <Button type="submit" variant="contained">Add Comment</Button>
+            </div>
+          </form>
+        )}
         {(c.comments || []).map((child) => renderComment(child, depth + 1))}
       </div>
     );
@@ -133,14 +154,38 @@ export default function Post() {
 
   const submitComment = async (e) => {
     e.preventDefault();
-    await api(`/posts/${id}/comments`, {
+    const res = await api(`/posts/${id}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: comment, parentCommentId: replyTo?.id }),
     });
-    const res = await api(`/posts/${id}`);
+    let newComment = null;
     if (res.ok) {
-      setPost(await res.json());
+      try {
+        newComment = await res.json();
+      } catch {
+        newComment = null;
+      }
+    }
+    if (newComment) {
+      setPost((prev) => {
+        if (!prev) return prev;
+        const insert = (comments) => {
+          if (!replyTo) return [...comments, newComment];
+          return comments.map((c) => {
+            if (c.id === replyTo.id) {
+              return { ...c, comments: [...(c.comments || []), newComment] };
+            }
+            return { ...c, comments: insert(c.comments || []) };
+          });
+        };
+        return { ...prev, comments: insert(prev.comments || []) };
+      });
+    } else {
+      const postRes = await api(`/posts/${id}`);
+      if (postRes.ok) {
+        setPost(await postRes.json());
+      }
     }
     setComment('');
     setReplyTo(null);
@@ -180,27 +225,19 @@ export default function Post() {
           <MenuItem onClick={closeMenu}>이 사용자의 글 보지않기</MenuItem>
         </Menu>
       </Typography>
-      <form onSubmit={submitComment} style={{ marginBottom: 16 }}>
-        {replyTo && (
-          <Typography variant="caption" component="div" sx={{ mb: 1 }}>
-            Replying to: {replyTo.text}
-            <Button size="small" onClick={cancelReply} sx={{ ml: 1 }}>
-              Cancel
-            </Button>
-          </Typography>
-        )}
-        <TextField
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Comment"
-          size="small"
-          inputRef={commentRef}
-          sx={{ mr: 1 }}
-        />
-        <Button type="submit" variant="contained">
-          Add Comment
-        </Button>
-      </form>
+      {!replyTo && (
+        <form onSubmit={submitComment} style={{ marginBottom: 16 }}>
+          <TextField
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Comment"
+            size="small"
+            inputRef={commentRef}
+            sx={{ mr: 1 }}
+          />
+          <Button type="submit" variant="contained">Add Comment</Button>
+        </form>
+      )}
       <List>
         {(post.comments || []).map((c) => renderComment(c, 0))}
       </List>

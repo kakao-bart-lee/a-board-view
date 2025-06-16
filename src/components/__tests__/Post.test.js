@@ -49,10 +49,9 @@ test('replies to a comment with parentCommentId', async () => {
       ok: true,
       json: async () => ({ id: 1, text: 'Hello', comments: [{ id: 2, text: 'Nice' }] }),
     })
-    .mockResolvedValueOnce({ ok: true })
     .mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ id: 1, text: 'Hello', comments: [{ id: 2, text: 'Nice', comments: [{ id: 3, text: 'Thanks' }] }] }),
+      json: async () => ({ id: 3, text: 'Thanks', parentCommentId: 2 }),
     });
 
   renderWithContext(<Post />);
@@ -62,7 +61,8 @@ test('replies to a comment with parentCommentId', async () => {
   userEvent.type(screen.getByPlaceholderText(/Comment/i), 'Thanks');
   userEvent.click(screen.getByRole('button', { name: /Add Comment/i }));
 
-  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
   const body = JSON.parse(fetch.mock.calls[1][1].body);
   expect(body).toEqual({ text: 'Thanks', parentCommentId: 2 });
+  expect(await screen.findByText(/Thanks/)).toBeInTheDocument();
 });
