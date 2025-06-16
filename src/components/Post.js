@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useApi } from '../api';
 import {
@@ -21,6 +21,11 @@ export default function Post() {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [commentMenuAnchor, setCommentMenuAnchor] = useState(null);
   const api = useApi();
+  const fetchedIdRef = useRef(null);
+
+  useEffect(() => {
+    fetchedIdRef.current = null;
+  }, [api]);
 
   const openMenu = (e) => {
     setMenuAnchor(e.currentTarget);
@@ -50,6 +55,8 @@ export default function Post() {
     return `${days}일 전`;
   };
   useEffect(() => {
+    if (fetchedIdRef.current === id) return;
+    fetchedIdRef.current = id;
     api(`/posts/${id}`)
       .then(async (res) => {
         if (!res.ok) {
