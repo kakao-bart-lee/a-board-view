@@ -88,3 +88,32 @@ test('does not show reply button for a reply comment', async () => {
   const replyButtons = screen.getAllByRole('button', { name: '대댓글' });
   expect(replyButtons).toHaveLength(1);
 });
+
+test('shows relative time for comments and replies', async () => {
+  const now = new Date('2025-06-16T12:00:00Z').getTime();
+  jest.spyOn(Date, 'now').mockReturnValue(now);
+  global.fetch = jest.fn().mockResolvedValueOnce({
+    ok: true,
+    json: async () => ({
+      id: 1,
+      text: 'Hello',
+      comments: [
+        {
+          id: 2,
+          text: 'Nice',
+          createdAt: '2025-06-16T11:59:00Z',
+          comments: [
+            { id: 3, text: 'Thanks', createdAt: '2025-06-16T11:50:00Z' },
+          ],
+        },
+      ],
+    }),
+  });
+
+  renderWithContext(<Post />);
+
+  expect(await screen.findByText('1분 전')).toBeInTheDocument();
+  expect(await screen.findByText('10분 전')).toBeInTheDocument();
+
+  Date.now.mockRestore();
+});
