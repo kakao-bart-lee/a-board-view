@@ -57,7 +57,7 @@ test('replies to a comment with parentCommentId', async () => {
   renderWithContext(<Post />);
 
   expect(await screen.findByText(/Nice/)).toBeInTheDocument();
-  userEvent.click(screen.getByRole('button', { name: '대댓글' }));
+  userEvent.click(screen.getByRole('button', { name: '답글' }));
   userEvent.type(screen.getByPlaceholderText(/Comment/i), 'Thanks');
   userEvent.click(screen.getByRole('button', { name: /Add Comment/i }));
 
@@ -85,6 +85,6 @@ test('does not show reply button for a reply comment', async () => {
   expect(await screen.findByText(/Thanks/)).toBeInTheDocument();
   expect(screen.queryByText(/More/)).not.toBeInTheDocument();
 
-  const replyButtons = screen.getAllByRole('button', { name: '대댓글' });
+  const replyButtons = screen.getAllByRole('button', { name: '답글' });
   expect(replyButtons).toHaveLength(1);
 });

@@ -92,7 +92,7 @@ export default function Post() {
                     sx={{ minWidth: 'auto', mr: 1 }}
                     onClick={() => startReply(c)}
                   >
-                    대댓글
+                    답글
                   </Button>
                 )}
                 <Button size="small" onClick={openCommentMenu} sx={{ minWidth: 'auto' }}>
@@ -261,7 +261,6 @@ export default function Post() {
         onClose={closeCommentMenu}
       >
         <MenuItem onClick={closeCommentMenu}>신고하기</MenuItem>
-        <MenuItem onClick={closeCommentMenu}>이 사용자의 글 보지않기</MenuItem>
       </Menu>
       {error && (
         <Alert severity="error" role="alert" sx={{ mt: 2 }}>
