@@ -66,3 +66,25 @@ test('replies to a comment with parentCommentId', async () => {
   expect(body).toEqual({ text: 'Thanks', parentCommentId: 2 });
   expect(await screen.findByText(/Thanks/)).toBeInTheDocument();
 });
+
+test('does not show reply button for a reply comment', async () => {
+  global.fetch = jest.fn().mockResolvedValueOnce({
+    ok: true,
+    json: async () => ({
+      id: 1,
+      text: 'Hello',
+      comments: [
+        { id: 2, text: 'Nice', comments: [{ id: 3, text: 'Thanks', comments: [{ id: 4, text: 'More' }] }] },
+      ],
+    }),
+  });
+
+  renderWithContext(<Post />);
+
+  expect(await screen.findByText(/Nice/)).toBeInTheDocument();
+  expect(await screen.findByText(/Thanks/)).toBeInTheDocument();
+  expect(screen.queryByText(/More/)).not.toBeInTheDocument();
+
+  const replyButtons = screen.getAllByRole('button', { name: '대댓글' });
+  expect(replyButtons).toHaveLength(1);
+});
