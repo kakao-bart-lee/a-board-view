@@ -18,10 +18,12 @@ export default function Post() {
   const [post, setPost] = useState(null);
   const [error, setError] = useState('');
   const [comment, setComment] = useState('');
+  const [replyTo, setReplyTo] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [commentMenuAnchor, setCommentMenuAnchor] = useState(null);
   const api = useApi();
   const fetchedIdRef = useRef(null);
+  const commentRef = useRef(null);
 
   useEffect(() => {
     fetchedIdRef.current = null;
@@ -43,6 +45,16 @@ export default function Post() {
     setCommentMenuAnchor(null);
   };
 
+  const startReply = (comment) => {
+    setReplyTo(comment);
+    setComment('');
+    setTimeout(() => commentRef.current && commentRef.current.focus(), 0);
+  };
+
+  const cancelReply = () => {
+    setReplyTo(null);
+  };
+
   const timeAgo = (dateStr) => {
     if (!dateStr) return '';
     const diff = Date.now() - new Date(dateStr).getTime();
@@ -53,6 +65,44 @@ export default function Post() {
     if (hours < 24) return `${hours}시간 전`;
     const days = Math.floor(hours / 24);
     return `${days}일 전`;
+  };
+
+  const renderComment = (c, depth) => {
+    const cColor = (c.gender || '').toLowerCase() === 'male' ? 'blue' : 'hotpink';
+    const time = timeAgo(c.createdAt || c.created || c.created_at);
+    return (
+      <div key={c.id}>
+        <ListItem disablePadding alignItems="flex-start" sx={{ pl: depth * 2 }}>
+          <ListItemText
+            primary={
+              <Typography component="span">
+                <span style={{ color: cColor }}>{'\u25CF'}</span> {c.text}
+              </Typography>
+            }
+            secondary={
+              <span>
+                {time && (
+                  <Typography component="span" variant="caption" sx={{ mr: 1 }}>
+                    {time}
+                  </Typography>
+                )}
+                <Button
+                  size="small"
+                  sx={{ minWidth: 'auto', mr: 1 }}
+                  onClick={() => startReply(c)}
+                >
+                  대댓글
+                </Button>
+                <Button size="small" onClick={openCommentMenu} sx={{ minWidth: 'auto' }}>
+                  {'\u22EE'}
+                </Button>
+              </span>
+            }
+          />
+        </ListItem>
+        {(c.comments || []).map((child) => renderComment(child, depth + 1))}
+      </div>
+    );
   };
   useEffect(() => {
     if (fetchedIdRef.current === id) return;
@@ -86,13 +136,14 @@ export default function Post() {
     await api(`/posts/${id}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: comment }),
+      body: JSON.stringify({ text: comment, parentCommentId: replyTo?.id }),
     });
     const res = await api(`/posts/${id}`);
     if (res.ok) {
       setPost(await res.json());
     }
     setComment('');
+    setReplyTo(null);
   };
 
   if (!post) return <div>Loading...</div>;
@@ -130,11 +181,20 @@ export default function Post() {
         </Menu>
       </Typography>
       <form onSubmit={submitComment} style={{ marginBottom: 16 }}>
+        {replyTo && (
+          <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+            Replying to: {replyTo.text}
+            <Button size="small" onClick={cancelReply} sx={{ ml: 1 }}>
+              Cancel
+            </Button>
+          </Typography>
+        )}
         <TextField
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Comment"
           size="small"
+          inputRef={commentRef}
           sx={{ mr: 1 }}
         />
         <Button type="submit" variant="contained">
@@ -142,36 +202,7 @@ export default function Post() {
         </Button>
       </form>
       <List>
-        {(post.comments || []).map(c => {
-          const cColor = (c.gender || '').toLowerCase() === 'male' ? 'blue' : 'hotpink';
-          const time = timeAgo(c.createdAt || c.created || c.created_at);
-          return (
-            <ListItem key={c.id} disablePadding alignItems="flex-start">
-              <ListItemText
-                primary={
-                  <Typography component="span">
-                    <span style={{ color: cColor }}>{'\u25CF'}</span> {c.text}
-                  </Typography>
-                }
-                secondary={
-                  <span>
-                    {time && (
-                      <Typography component="span" variant="caption" sx={{ mr: 1 }}>
-                        {time}
-                      </Typography>
-                    )}
-                    <Button size="small" sx={{ minWidth: 'auto', mr: 1 }}>
-                      대댓글
-                    </Button>
-                    <Button size="small" onClick={openCommentMenu} sx={{ minWidth: 'auto' }}>
-                      {'\u22EE'}
-                    </Button>
-                  </span>
-                }
-              />
-            </ListItem>
-          );
-        })}
+        {(post.comments || []).map((c) => renderComment(c, 0))}
       </List>
       <Menu
         anchorEl={commentMenuAnchor}

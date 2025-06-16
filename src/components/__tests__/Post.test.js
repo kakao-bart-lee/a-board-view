@@ -41,3 +41,28 @@ test('loads post and submits comment', async () => {
   expect(await screen.findByText(/Nice/)).toBeInTheDocument();
   await waitFor(() => expect(screen.getByPlaceholderText(/Comment/i)).toHaveValue(''));
 });
+
+test('replies to a comment with parentCommentId', async () => {
+  global.fetch = jest
+    .fn()
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 1, text: 'Hello', comments: [{ id: 2, text: 'Nice' }] }),
+    })
+    .mockResolvedValueOnce({ ok: true })
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 1, text: 'Hello', comments: [{ id: 2, text: 'Nice', comments: [{ id: 3, text: 'Thanks' }] }] }),
+    });
+
+  renderWithContext(<Post />);
+
+  expect(await screen.findByText(/Nice/)).toBeInTheDocument();
+  userEvent.click(screen.getByRole('button', { name: '대댓글' }));
+  userEvent.type(screen.getByPlaceholderText(/Comment/i), 'Thanks');
+  userEvent.click(screen.getByRole('button', { name: /Add Comment/i }));
+
+  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+  const body = JSON.parse(fetch.mock.calls[1][1].body);
+  expect(body).toEqual({ text: 'Thanks', parentCommentId: 2 });
+});
