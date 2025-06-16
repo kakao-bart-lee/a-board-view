@@ -8,17 +8,38 @@ import {
   List,
   ListItem,
   ListItemText,
+  Alert,
 } from '@mui/material';
 
 export default function Post() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [error, setError] = useState('');
   const [comment, setComment] = useState('');
   const api = useApi();
   useEffect(() => {
     api(`/posts/${id}`)
-      .then(res => res.json())
-      .then(setPost);
+      .then(async (res) => {
+        if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('Login required');
+          }
+          throw new Error('Failed to load post');
+        }
+        try {
+          return await res.json();
+        } catch {
+          return null;
+        }
+      })
+      .then((data) => {
+        setPost(data);
+        setError('');
+      })
+      .catch((err) => {
+        setPost(null);
+        setError(err.message);
+      });
   }, [id, api]);
 
   const submitComment = async (e) => {
@@ -61,6 +82,11 @@ export default function Post() {
           </ListItem>
         ))}
       </List>
+      {error && (
+        <Alert severity="error" role="alert" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
+      )}
     </div>
   );
 }
