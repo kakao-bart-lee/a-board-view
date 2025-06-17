@@ -111,7 +111,13 @@ export default function Post() {
         </ListItem>
         {replyTo && replyTo.id === c.id && (
           <form onSubmit={submitComment} style={{ marginBottom: 16 }}>
-            <div style={{ paddingLeft: (depth + 1) * 16 }}>
+            <div
+              style={{
+                paddingLeft: (depth + 1) * 16,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
             <Typography variant="caption" component="div" sx={{ mb: 1 }}>
               Replying to: {c.text}
               <Button size="small" onClick={cancelReply} sx={{ ml: 1 }}>
@@ -124,7 +130,8 @@ export default function Post() {
               placeholder="Comment"
               size="small"
               inputRef={commentRef}
-              sx={{ mr: 1 }}
+              fullWidth
+              sx={{ mb: 1 }}
             />
             <Button type="submit" variant="contained">Add Comment</Button>
             </div>
@@ -253,14 +260,18 @@ export default function Post() {
         </Menu>
       </Typography>
       {!replyTo && (
-        <form onSubmit={submitComment} style={{ marginBottom: 16 }}>
+        <form
+          onSubmit={submitComment}
+          style={{ marginBottom: 16, display: 'flex', flexDirection: 'column' }}
+        >
           <TextField
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Comment"
             size="small"
             inputRef={commentRef}
-            sx={{ mr: 1 }}
+            fullWidth
+            sx={{ mb: 1 }}
           />
           <Button type="submit" variant="contained">Add Comment</Button>
         </form>
