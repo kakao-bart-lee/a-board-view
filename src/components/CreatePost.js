@@ -17,7 +17,7 @@ export default function CreatePost() {
     navigate('/');
   };
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column' }}>
       <Typography variant="h4" gutterBottom>
         Write Post
       </Typography>
